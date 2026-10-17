@@ -5,7 +5,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig({
   plugins: [react(), VitePWA({
     registerType: 'prompt',
-    includeAssets: ['icon.svg', 'apple-touch-icon.png', 'sample.pdf', 'bosses/*.svg'],
+    includeAssets: ['icon.svg', 'apple-touch-icon.png', 'sample.pdf', 'bosses/*.{svg,png}'],
     manifest: {
       name: 'Final Reader', short_name: 'Final Reader', lang: 'es',
       description: 'Cada página, una nueva conquista. Tu lector PDF privado con alma de RPG.',

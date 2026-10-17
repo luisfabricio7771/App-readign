@@ -1,10 +1,12 @@
 {
   "name": "final-reader",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
+    "predev": "node scripts/prepare-pdf.mjs",
     "dev": "vite --host 0.0.0.0",
+    "prebuild": "node scripts/prepare-pdf.mjs",
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 0.0.0.0",
     "test": "vitest run",

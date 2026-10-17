@@ -14,4 +14,4 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 PDF.js font, character-map, and WASM assets are copied from `pdfjs-dist` into generated `public/pdf/` during installation, retaining their bundled license files.
 
-The sample story, sample PDF layout, app icons, and five boss SVG illustrations were created for this project. No Final Fantasy character images are included.
+The sample story, sample PDF layout, app icons, and five boss illustrations were created for this project. Astralis is an original SVG; the other four are original generated PNG illustrations following its geometric, celestial art direction. No Final Fantasy character images are included.

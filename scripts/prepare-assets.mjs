@@ -1,11 +1,7 @@
-import { mkdir, cp, writeFile } from 'node:fs/promises';
+import { writeFile } from 'node:fs/promises';
 import { deflateSync } from 'node:zlib';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
-
-await mkdir('public/pdf', { recursive: true });
-for (const name of ['cmaps', 'standard_fonts', 'wasm']) {
-  await cp(`node_modules/pdfjs-dist/${name}`, `public/pdf/${name}`, { recursive: true });
-}
+import './prepare-pdf.mjs';
 
 // Original, redistributable reading sample. No external books or licensed artwork.
 const chapters = [

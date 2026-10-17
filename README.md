@@ -13,6 +13,8 @@ npm run dev
 
 El script `postinstall` prepara los recursos locales de PDF.js, los iconos instalables y un PDF de muestra original de 24 páginas. No descarga libros ni imágenes de terceros. Abre la dirección que muestra Vite. Importa un PDF o pulsa **Explorar una muestra**.
 
+Antes de cada arranque y compilación se prepara un worker estático de la misma versión que PDF.js en `public/pdf/`. Así, su carga no depende de importar un módulo desde `node_modules`, una ruta que puede fallar en Vite sobre Windows. El worker se incluye también en la caché sin conexión.
+
 ```sh
 npm run build
 npm run preview
@@ -63,7 +65,9 @@ Si ya tienes Chromium instalado, puedes utilizarlo sin descargar otro navegador.
 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e
 ```
 
-Las pruebas de navegador usan PDF reales y dos tamaños: escritorio y móvil con dimensiones de iPhone 13. Comprueban renderizado, búsqueda, navegación, zoom, lectura continua, combate de diez páginas, salto a la página 50, duplicados, persistencia, personalización con imagen, ajustes, errores, eliminación y lectura de un PDF guardado tras desconectar la red. La emulación móvil usa Chromium; no sustituye una prueba en Safari sobre un iPhone físico.
+Las pruebas de navegador usan PDF reales y dos tamaños: escritorio y móvil con dimensiones de iPhone 13. Comprueban renderizado, búsqueda, navegación, zoom, lectura continua, combate de diez páginas, salto a la página 50, duplicados, persistencia, personalización con imagen, ajustes, errores, eliminación y lectura de un PDF guardado tras desconectar la red. Una prueba adicional ejecuta Vite en desarrollo, bloquea las importaciones antiguas del worker desde `node_modules` y comprueba que se importa y renderiza un PDF con un worker real, sin recurrir a un fake worker. La emulación móvil usa Chromium; no sustituye una prueba en Safari sobre un iPhone físico.
+
+Para actualizar una copia descargada: detén el servidor con Ctrl + C, descomprime la versión nueva en otra carpeta, entra en la carpeta que contiene `package.json`, ejecuta `npm ci` y después `npm run dev -- --port 5173 --strictPort`. En PowerShell puedes utilizar `npm.cmd`. Abre la misma dirección `http://localhost:5173/` para seguir usando el almacenamiento de ese navegador. No hace falta borrar datos del sitio ni eliminar la copia anterior.
 
 ## Estructura
 
@@ -73,8 +77,9 @@ Las pruebas de navegador usan PDF reales y dos tamaños: escritorio y móvil con
 - `src/storage.ts`: transacciones de IndexedDB y preferencias.
 - `src/pdf.ts`: PDF.js, contraseñas, portadas e imágenes.
 - `src/components.tsx`: diálogos accesibles, ajustes y personalización.
-- `public/bosses/`: cinco ilustraciones SVG originales de este proyecto.
+- `public/bosses/`: Astralis en SVG y cuatro ilustraciones PNG originales de geometría cósmica con fondo transparente.
+- `scripts/prepare-pdf.mjs`: prepara el worker estático versionado y los recursos sin conexión antes de iniciar o compilar.
 - `scripts/prepare-assets.mjs`: recursos locales, iconos y relato de muestra originales.
 - `vite.config.ts`: manifiesto PWA y precaché sin servicios externos.
 
-Las ilustraciones y el relato se crearon para Final Reader. No se incluyen personajes, marcas gráficas ni imágenes de Final Fantasy. El CSS de la capa de texto deriva de PDF.js (Mozilla Foundation, Apache-2.0); ver `THIRD_PARTY_NOTICES.md`.
+Las ilustraciones y el relato se crearon para Final Reader. Los cuatro nuevos guardianes siguen la dirección visual de Astralis: ojos, cristales, órbitas y símbolos arcanos. No se incluyen personajes, marcas gráficas ni imágenes de Final Fantasy. El CSS de la capa de texto deriva de PDF.js (Mozilla Foundation, Apache-2.0); ver `THIRD_PARTY_NOTICES.md`.

@@ -1,14 +1,16 @@
-import { GlobalWorkerOptions, getDocument, type PDFDocumentProxy } from 'pdfjs-dist';
-import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+import { GlobalWorkerOptions, getDocument, version, type PDFDocumentProxy } from 'pdfjs-dist';
 
-GlobalWorkerOptions.workerSrc = workerUrl;
+// Serve the matching worker as a static module. Importing it through Vite's
+// node_modules URL can fail in development on Windows and trigger a fake worker.
+const pdfAssets = `${import.meta.env.BASE_URL}pdf/`;
+GlobalWorkerOptions.workerSrc = `${pdfAssets}pdf.worker-${version}.min.mjs`;
 export type PasswordHandler = (retry: boolean) => Promise<string>;
 
 export async function openPdf(blob: Blob, password?: PasswordHandler) {
   const task = getDocument({
     data: new Uint8Array(await blob.arrayBuffer()),
-    cMapUrl: '/pdf/cmaps/', cMapPacked: true,
-    standardFontDataUrl: '/pdf/standard_fonts/', wasmUrl: '/pdf/wasm/'
+    cMapUrl: `${pdfAssets}cmaps/`, cMapPacked: true,
+    standardFontDataUrl: `${pdfAssets}standard_fonts/`, wasmUrl: `${pdfAssets}wasm/`
   });
   task.onPassword = (callback: (value: string) => void, reason: number) => {
     if (!password) { void task.destroy(); return; }

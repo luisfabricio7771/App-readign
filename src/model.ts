@@ -35,10 +35,10 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 export const BOSSES = [
-  { id: 'vespera', name: 'Véspera', epithet: 'Dragón del vacío', type: 'Dragón ancestral', image: '/bosses/vespera.svg', color: '#ad8aff', description: 'Entre las estrellas olvidadas espera el guardián del primer umbral. Solo el conocimiento puede quebrar sus escamas.' },
-  { id: 'ignar', name: 'Ignar', epithet: 'Corazón de ceniza', type: 'Demonio de fuego', image: '/bosses/ignar.svg', color: '#f69c68', description: 'Forjado en las entrañas de una montaña dormida. Cada página apaga una chispa de su fuego eterno.' },
-  { id: 'nyria', name: 'Nyria', epithet: 'La reina de la escarcha', type: 'Espíritu de hielo', image: '/bosses/nyria.svg', color: '#86daec', description: 'Su corona encierra los inviernos de mil reinos. Rompe el silencio y derrite sus defensas con tu lectura.' },
-  { id: 'mordren', name: 'Mordren', epithet: 'El juramento roto', type: 'Caballero oscuro', image: '/bosses/mordren.svg', color: '#c8a9dc', description: 'Un caballero sin reino custodia las historias que nadie se atrevió a terminar. Escribe el final de su guardia.' },
+  { id: 'vespera', name: 'Véspera', epithet: 'Dragón del vacío', type: 'Dragón ancestral', image: '/bosses/vespera.png', color: '#ad8aff', description: 'Entre las estrellas olvidadas espera el guardián del primer umbral. Su ojo violeta vigila el vacío entre dos alas de amatista. Solo el conocimiento puede quebrar su sello.' },
+  { id: 'ignar', name: 'Ignar', epithet: 'Corazón de ceniza', type: 'Demonio de fuego', image: '/bosses/ignar.png', color: '#f69c68', description: 'Un ojo de ámbar arde en el centro de un antiguo sello solar. Sus cristales guardan el fuego de una estrella extinta. Cada página apaga una chispa de su fuego eterno.' },
+  { id: 'nyria', name: 'Nyria', epithet: 'La reina de la escarcha', type: 'Espíritu de hielo', image: '/bosses/nyria.png', color: '#86daec', description: 'Su mirada inmóvil habita una corona de seis cristales, suspendida entre órbitas heladas. Rompe el silencio y derrite sus defensas con tu lectura.' },
+  { id: 'mordren', name: 'Mordren', epithet: 'El juramento roto', type: 'Caballero oscuro', image: '/bosses/mordren.png', color: '#c8a9dc', description: 'El juramento de un caballero sin reino permanece sellado en una hoja de obsidiana. Una corona flotante custodia su ojo violeta. Escribe el final de su guardia.' },
   { id: 'astralis', name: 'Astralis', epithet: 'Eco del infinito', type: 'Entidad cósmica', image: '/bosses/astralis.svg', color: '#d7b97d', description: 'Más allá del tiempo, una mirada sigue el curso de cada historia. Diez páginas bastan para cambiar su destino.' }
 ] as const;
 
