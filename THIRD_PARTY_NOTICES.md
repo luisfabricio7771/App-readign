@@ -1,5 +1,7 @@
 # Third-party notices
 
+The optional desktop distribution bundles Electron (MIT) and Chromium and includes their upstream `LICENSE` / `LICENSES.chromium.html` notices. Build tooling includes electron-builder (MIT). These development dependencies do not add remote services or upload documents. The complete JavaScript dependency versions and integrity hashes are recorded in `package-lock.json`.
+
 Final Reader uses the open-source dependencies declared in `package.json` and locked in `package-lock.json`. Their license notices are distributed with their npm packages.
 
 `src/pdf-text.css` contains adapted text-layer layout rules from PDF.js:

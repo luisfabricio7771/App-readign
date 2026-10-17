@@ -3,6 +3,7 @@ import { X, Diamond, ShieldCheck, WifiOff, Swords, Upload, ImagePlus, RotateCcw,
 import { BOSSES, type Book, type Settings } from './model';
 import { prepareImage } from './pdf';
 import { useState } from 'react';
+import { isDesktopApp } from './platform';
 
 export function Crystal({ small = false }: { small?: boolean }) {
   return <img className={small ? 'crystal small' : 'crystal'} src="/icon.svg" alt="" />;
@@ -61,7 +62,7 @@ export function SettingsModal({ settings, onChange, onClose, onInstall }: { sett
     </div>
     <div className="settings-section"><label className="toggle-row"><span><strong><Sparkles size={16} /> Reducir animaciones</strong><small>Una aventura más tranquila.</small></span><input type="checkbox" role="switch" checked={settings.reducedMotion} onChange={e => onChange({ ...settings, reducedMotion: e.target.checked })} /></label></div>
     <div className="info-box"><ShieldCheck size={20} /><p>Tus libros nunca salen de aquí. El navegador guarda archivos y progreso en este dispositivo. Borrar los datos del sitio también borra tu biblioteca; conserva tus PDF originales. Si usas música, solo el reproductor se conecta con YouTube.</p></div>
-    <button className="button secondary full" onClick={onInstall}><ArrowDownToLine size={16} /> Instalar Final Reader</button>
+    <button className="button secondary full" onClick={onInstall}><ArrowDownToLine size={16} /> {isDesktopApp ? 'Sobre la aplicación de escritorio' : 'Instalar Final Reader'}</button>
   </Modal>;
 }
 
@@ -87,6 +88,12 @@ export function BossEditor({ book, bossId, onSave, onClose }: { book: Book; boss
 }
 
 export function InstallHelp({ onClose }: { onClose: () => void }) {
+  if (isDesktopApp) return <Modal title="Final Reader para escritorio" onClose={onClose}>
+    <div className="install-illustration"><Crystal /></div>
+    <p className="modal-intro">Tu aventura ya tiene un lugar en esta computadora. Abre Final Reader desde su acceso directo o ejecutable.</p>
+    <div className="settings-section"><h3>Listo para leer sin conexión</h3><p>El lector, los diez jefes y el libro de muestra vienen incluidos. No necesitas Node.js, una terminal ni mantener abierto Chrome. YouTube sí necesita internet.</p></div>
+    <div className="info-box"><ShieldCheck size={20} /><p>Los libros y el progreso se guardan en el perfil local de Final Reader. Se conservan al cerrar y actualizar la aplicación. Esta biblioteca es independiente de la que tienes en Chrome; puedes importar aquí tus PDF originales.</p></div>
+  </Modal>;
   return <Modal title="Lleva la aventura contigo" onClose={onClose}>
     <div className="install-illustration"><Crystal /><ArrowDownToLine size={22} /></div>
     <p className="modal-intro">Final Reader se instala como una aplicación gratuita. No necesitas una cuenta ni una tienda de apps.</p>

@@ -1,3 +1,4 @@
+import { isDesktopApp } from './platform';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowDownToLine, ArrowRight, BookOpen, Check, ChevronDown, Clock3, Diamond, Download, Flame, FolderHeart, Library, LoaderCircle, MoreHorizontal, Plus, Search, Settings2, ShieldCheck, Sparkles, Swords, Trash2, Trophy, Upload, Wifi, WifiOff, X } from 'lucide-react';
 import { BOSSES, DEFAULT_SETTINGS, bossForVictory, percent, type Book, type Settings } from './model';
@@ -27,7 +28,7 @@ export default function App() {
   const [installHelp, setInstallHelp] = useState(false);
   const [installEvent, setInstallEvent] = useState<InstallEvent>();
   const [online, setOnline] = useState(navigator.onLine);
-  const [offlineReady, setOfflineReady] = useState(false);
+  const [offlineReady, setOfflineReady] = useState(isDesktopApp);
   const [filter, setFilter] = useState<'all' | 'reading' | 'finished'>('all');
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState('recent');
@@ -157,7 +158,7 @@ export default function App() {
         <span className="sidebar-label">TU REFUGIO</span>
         <nav className="main-navigation" aria-label="Navegación principal"><button className={view === 'library' ? 'active' : ''} onClick={() => setView('library')}><Library size={19} /><span>Biblioteca</span><span className="nav-count">{books.length}</span></button><button className={view === 'chronicles' ? 'active' : ''} onClick={() => setView('chronicles')}><Trophy size={19} /><span>Mis hazañas</span>{allVictories.length > 0 && <span className="nav-dot" />}</button><button className={view === 'bestiary' ? 'active' : ''} onClick={() => setView('bestiary')}><Swords size={19} /><span>Bestiario</span><span className="new-badge">{BOSSES.length}</span></button></nav>
         <div className="sidebar-adventure"><div className="small-spark">✦</div><p>Las grandes aventuras<br />empiezan con una página.</p><span>Haz de la lectura tu ritual.</span></div>
-        <div className="sidebar-bottom"><button className="sidebar-action" onClick={() => setSettingsOpen(true)}><Settings2 size={18} /> Ajustes</button><button className="sidebar-action" onClick={() => void installApp()}><ArrowDownToLine size={18} /> Instalar aplicación<ArrowRight size={14} /></button><div className="adventurer"><div className="avatar"><Diamond size={20} /></div><div><strong>Lector errante <span>NV. {level}</span></strong><div className="xp-track"><i style={{ width: `${xp % 300 / 3}%` }} /></div><small>{xp % 300} / 300 EXP para el siguiente nivel</small></div></div><span className="sidebar-version">FINAL READER <span>v1.2 · HECHO PARA LEER</span></span></div>
+        <div className="sidebar-bottom"><button className="sidebar-action" onClick={() => setSettingsOpen(true)}><Settings2 size={18} /> Ajustes</button><button className="sidebar-action" onClick={() => void installApp()}><ArrowDownToLine size={18} /> {isDesktopApp ? 'Aplicación de escritorio' : 'Instalar aplicación'}<ArrowRight size={14} /></button><div className="adventurer"><div className="avatar"><Diamond size={20} /></div><div><strong>Lector errante <span>NV. {level}</span></strong><div className="xp-track"><i style={{ width: `${xp % 300 / 3}%` }} /></div><small>{xp % 300} / 300 EXP para el siguiente nivel</small></div></div><span className="sidebar-version">FINAL READER <span>v1.3 · HECHO PARA LEER</span></span></div>
       </aside>
       <div className="workspace"><header className="topbar"><div className="breadcrumb"><span>Tu santuario de lectura</span><ChevronDown size={13} /><span>{view === 'library' ? 'Biblioteca' : view === 'chronicles' ? 'Mis hazañas' : 'Bestiario'}</span></div><div className="topbar-right"><span className="local-badge"><span className="status-dot" /><ShieldCheck size={13} /> Espacio privado</span><span className="topbar-separator" /><button className="icon-button mobile-settings" aria-label="Abrir ajustes" onClick={() => setSettingsOpen(true)}><Settings2 size={18} /></button><button className="level-badge" title="Ver mis hazañas" onClick={() => setView('chronicles')}><Diamond size={14} /><span>Nivel {level}</span></button></div></header>
         <main className="dashboard">

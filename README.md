@@ -2,6 +2,44 @@
 
 Lector de PDF privado con alma de RPG. Una PWA en español, gratuita, sin cuentas, anuncios propios, suscripciones, analítica ni servidor de libros. La música de YouTube es opcional y conserva el reproductor, anuncios y restricciones del servicio. React, TypeScript, Vite, PDF.js e IndexedDB.
 
+## Aplicación de Windows (.exe)
+
+La versión de escritorio incluye su propio motor de navegación. **No necesitas Node.js, npm, una terminal, Chrome ni un servidor Vite para usar el ejecutable.** Es compatible con Windows 10/11 de 64 bits.
+
+En [Releases](https://github.com/luisfabricio7771/App-readign/releases) encontrarás dos archivos por versión:
+
+- `FinalReader-1.3.0-Setup.exe`: instalador para tu usuario, con selección de carpeta y accesos directos en el escritorio y menú Inicio; no requiere administrador.
+- `FinalReader-1.3.0-Portable.exe`: un solo archivo que puedes guardar y abrir con doble clic, sin instalarlo. Durante el arranque extrae temporalmente su motor de lectura; puede tardar unos segundos.
+
+El lector, la muestra y las ilustraciones vienen incluidos y funcionan sin internet **desde el primer inicio**. La música de YouTube sigue necesitando conexión. Los PDF y el progreso se guardan en `%APPDATA%\Final Reader`, fuera de la carpeta de instalación. La aplicación instalada y la portátil usan la misma biblioteca; las actualizaciones y la desinstalación conservan los datos. Chrome tiene una biblioteca independiente: los libros y el progreso del navegador no se transfieren automáticamente. Puedes importar tus PDF originales en la aplicación.
+
+El ejecutable no tiene certificado comercial de firma de Windows; el sistema puede mostrar un aviso de editor desconocido. Descarga los archivos de este repositorio y consulta `SHA256SUMS.txt` en la misma publicación.
+
+### Compilar la versión de escritorio
+
+Solo para desarrollar o generar tus propios ejecutables, necesitas Node.js 24 y las dependencias del proyecto:
+
+```sh
+npm ci
+npm run desktop:start       # Compila y abre la ventana de escritorio
+npm run desktop:dist        # Genera los dos .exe de Windows en release/
+```
+
+El empaquetado oficial se realiza en Windows mediante `.github/workflows/windows-desktop.yml`, al publicar una etiqueta `v` que coincida con `package.json`. El flujo compila, prueba la aplicación empaquetada en Windows, genera SHA256 y publica los archivos solo después de superar las pruebas. No requiere claves de API ni un certificado de pago. El disparo manual genera artefactos sin publicar una release.
+
+El proceso principal de Electron sirve únicamente los recursos empaquetados a través de `127.0.0.1:43763`, una dirección interna que no se anuncia en la red. No sirve la biblioteca ni recibe archivos. El origen permanece fijo para conservar IndexedDB. Si el puerto está ocupado, muestra un error en vez de cambiar de origen y hacer desaparecer aparentemente los datos. Se utiliza una sola instancia, aislamiento de contexto, sandbox, integración de Node desactivada en el lector, CSP, permisos limitados y bloqueo de navegación externa. Los enlaces oficiales de YouTube se abren en el navegador externo.
+
+Para validar el proceso de escritorio:
+
+```sh
+npm run test:desktop-server # Rutas, MIME, CSP y restricciones de acceso
+npm run desktop:runtime    # Descarga y verifica el motor de Electron
+npm run build
+npm run test:desktop        # PDF real, sin conexión, persistencia y aislamiento
+```
+
+`FINAL_READER_TEST_EXECUTABLE` permite ejecutar la prueba contra un binario empaquetado. `FINAL_READER_DATA_DIR` permite usar un perfil independiente de pruebas. En contenedores Linux sin sandbox de sistema disponible, el arnés admite `FINAL_READER_TEST_NO_SANDBOX=1`; no se añade esa opción al producto ni se utiliza en las pruebas de Windows. En Linux, la prueba necesita una pantalla X11 o Xvfb.
+
 ## Empezar
 
 Requiere Node.js **22.13 o posterior** (recomendado: **24 LTS**) y npm.
@@ -102,6 +140,10 @@ Para actualizar una copia descargada: detén el servidor con Ctrl + C, descompri
 - `src/storage.ts`: transacciones de IndexedDB y preferencias.
 - `src/pdf.ts`: PDF.js, contraseñas, portadas e imágenes.
 - `src/components.tsx`: diálogos accesibles, ajustes y personalización.
+- `desktop/main.cjs`: ventana nativa, perfil local, permisos y navegación.
+- `desktop/server.cjs`: recursos empaquetados en una dirección interna estable.
+- `electron-builder.yml`: instalador y ejecutable portátil de Windows.
+- `.github/workflows/windows-desktop.yml`: compilación, prueba y publicación en Windows.
 - `public/bosses/`: Ojo del Infinito en SVG y nueve ilustraciones PNG originales de geometría cósmica con fondo transparente.
 - `scripts/prepare-pdf.mjs`: prepara el worker estático versionado y los recursos sin conexión antes de iniciar o compilar.
 - `scripts/prepare-assets.mjs`: recursos locales, iconos y relato de muestra originales.

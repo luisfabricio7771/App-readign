@@ -1,0 +1,42 @@
+appId: com.finalreader.desktop
+productName: Final Reader
+copyright: Copyright © 2026 Final Reader
+asar: true
+npmRebuild: false
+directories:
+  output: release
+  buildResources: build-resources
+files:
+  - dist/**/*
+  - desktop/main.cjs
+  - desktop/server.cjs
+  - package.json
+  - '!**/node_modules/**/*'
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+  icon: build-resources/icon.ico
+  executableName: Final Reader
+  requestedExecutionLevel: asInvoker
+nsis:
+  artifactName: FinalReader-${version}-Setup.exe
+  oneClick: false
+  perMachine: false
+  allowElevation: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Final Reader
+  deleteAppDataOnUninstall: false
+  installerLanguages: [es_ES]
+  language: 3082
+portable:
+  artifactName: FinalReader-${version}-Portable.exe
+  requestExecutionLevel: user
+linux:
+  target: dir
+  executableName: final-reader
+publish: null

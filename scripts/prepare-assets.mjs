@@ -1,4 +1,4 @@
-import { writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { deflateSync } from 'node:zlib';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import './prepare-pdf.mjs';
@@ -83,4 +83,12 @@ function icon(size, inset = .18) {
   return Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk('IHDR', header), chunk('IDAT', deflateSync(raw)), chunk('IEND', Buffer.alloc(0))]);
 }
 for (const [name, size, inset] of [['icon-192.png', 192, .16], ['icon-512.png', 512, .16], ['icon-maskable.png', 512, .25], ['apple-touch-icon.png', 180, .18]]) await writeFile(`public/${name}`, icon(size, inset));
+// Windows ICO supports a PNG image of 256 × 256 with a zero dimension byte.
+await mkdir('build-resources', { recursive: true });
+const windowsIcon = icon(256, .16);
+const icoHeader = Buffer.alloc(22);
+icoHeader.writeUInt16LE(1, 2); icoHeader.writeUInt16LE(1, 4);
+icoHeader.writeUInt16LE(1, 10); icoHeader.writeUInt16LE(32, 12);
+icoHeader.writeUInt32LE(windowsIcon.length, 14); icoHeader.writeUInt32LE(22, 18);
+await writeFile('build-resources/icon.ico', Buffer.concat([icoHeader, windowsIcon]));
 console.log('Local PDF assets, original sample and PWA icons prepared.');

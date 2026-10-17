@@ -1,0 +1,78 @@
+name: Final Reader para Windows
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Verificar la versión de la etiqueta
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        run: |
+          $version = (Get-Content package.json | ConvertFrom-Json).version
+          if ($env:GITHUB_REF_NAME -ne "v$version") { throw 'La etiqueta no coincide con package.json.' }
+      - run: npm ci
+      - run: npm test
+      - run: npm run test:desktop-server
+      - name: Compilar instalador y aplicación portátil
+        run: npm run desktop:dist
+      - name: Probar la aplicación real empaquetada en Windows
+        run: npm run test:desktop
+        env:
+          FINAL_READER_TEST_EXECUTABLE: release/win-unpacked/Final Reader.exe
+      - name: Generar sumas SHA256
+        shell: pwsh
+        run: |
+          Get-ChildItem release/FinalReader-*.exe | ForEach-Object {
+            $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
+            "$hash  $($_.Name)"
+          } | Set-Content release/SHA256SUMS.txt -Encoding utf8NoBOM
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: final-reader-windows
+          path: |
+            release/FinalReader-*.exe
+            release/SHA256SUMS.txt
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: final-reader-windows
+          path: release
+      - name: Publicar los ejecutables verificados
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$RELEASE_TAG" release/FinalReader-*-Setup.exe release/FinalReader-*-Portable.exe release/SHA256SUMS.txt \
+            --repo "$GITHUB_REPOSITORY" --verify-tag --title "Final Reader $RELEASE_TAG para Windows" \
+            --notes-file desktop/RELEASE_NOTES.md --latest
