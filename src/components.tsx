@@ -39,7 +39,7 @@ export function Modal({ title, children, onClose, wide = false }: { title: strin
 }
 
 export function PrivacyNote() {
-  return <div className="privacy-line"><span><ShieldCheck size={14} /> Solo en tu dispositivo</span><i /><span><WifiOff size={14} /> Sin conexión</span><i /><span>Sin anuncios. Siempre.</span></div>;
+  return <div className="privacy-line"><span><ShieldCheck size={14} /> Solo en tu dispositivo</span><i /><span><WifiOff size={14} /> Sin conexión</span><i /><span>Sin anuncios propios.</span></div>;
 }
 
 export function SettingsModal({ settings, onChange, onClose, onInstall }: { settings: Settings; onChange: (settings: Settings) => void; onClose: () => void; onInstall: () => void }) {
@@ -49,6 +49,8 @@ export function SettingsModal({ settings, onChange, onClose, onInstall }: { sett
       <button className={settings.theme === 'dark' ? 'selected' : ''} onClick={() => onChange({ ...settings, theme: 'dark' })}><Moon size={16} /> Oscura</button>
       <button className={settings.theme === 'light' ? 'selected' : ''} onClick={() => onChange({ ...settings, theme: 'light' })}><Sun size={16} /> Clara</button>
     </div></div>
+    <div className="settings-section"><label className="toggle-row"><span><strong><BookOpen size={16} /> Animación de hoja</strong><small>Giro de papel en 3D al avanzar o retroceder en página individual.</small></span><input type="checkbox" role="switch" checked={settings.pageAnimation} onChange={event => onChange({ ...settings, pageAnimation: event.target.checked })} /></label></div>
+    <div className="settings-section"><label className="toggle-row"><span><strong><Swords size={16} /> Animaciones de jefes</strong><small>Flotación, aura y reacciones suaves durante el combate.</small></span><input type="checkbox" role="switch" checked={settings.bossAnimation} onChange={event => onChange({ ...settings, bossAnimation: event.target.checked })} /></label></div>
     <div className="settings-section"><h3><BookOpen size={16} /> Modo de lectura</h3><div className="segmented">
       <button className={settings.mode === 'single' ? 'selected' : ''} onClick={() => onChange({ ...settings, mode: 'single' })}>Página individual</button>
       <button className={settings.mode === 'continuous' ? 'selected' : ''} onClick={() => onChange({ ...settings, mode: 'continuous' })}>Continua</button>
@@ -58,7 +60,7 @@ export function SettingsModal({ settings, onChange, onClose, onInstall }: { sett
       <p className="helper">Desactivada por defecto. El temporizador se reinicia al cambiar de página y se pausa si ocultas la app. Siempre puedes usar «Página leída».</p>
     </div>
     <div className="settings-section"><label className="toggle-row"><span><strong><Sparkles size={16} /> Reducir animaciones</strong><small>Una aventura más tranquila.</small></span><input type="checkbox" role="switch" checked={settings.reducedMotion} onChange={e => onChange({ ...settings, reducedMotion: e.target.checked })} /></label></div>
-    <div className="info-box"><ShieldCheck size={20} /><p>Tus libros nunca salen de aquí. El navegador guarda archivos y progreso en este dispositivo. Borrar los datos del sitio también borra tu biblioteca; conserva tus PDF originales.</p></div>
+    <div className="info-box"><ShieldCheck size={20} /><p>Tus libros nunca salen de aquí. El navegador guarda archivos y progreso en este dispositivo. Borrar los datos del sitio también borra tu biblioteca; conserva tus PDF originales. Si usas música, solo el reproductor se conecta con YouTube.</p></div>
     <button className="button secondary full" onClick={onInstall}><ArrowDownToLine size={16} /> Instalar Final Reader</button>
   </Modal>;
 }

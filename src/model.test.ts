@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bossFor, bossHealth, completePage, percent, type Book } from './model';
+import { bossFor, bossForVictory, bossHealth, completePage, percent, type Book } from './model';
 
 function book(totalPages = 60): Book {
   return { id: 'test', title: 'Libro', fileName: 'libro.pdf', totalPages, lastPage: 1, completedPages: [], victories: [], importedAt: '', lastOpened: '', readingSeconds: 0, size: 1, skins: {} };
@@ -25,24 +25,24 @@ describe('Reading combat', () => {
     expect(bossHealth(current)).toBe(10);
     expect(current.victories).toHaveLength(0);
     current = completePage(current, 10, '2026-10-17T12:00:00.000Z');
-    expect(current.victories).toEqual([{ bossIndex: 0, name: 'Véspera', page: 10, defeatedAt: '2026-10-17T12:00:00.000Z' }]);
+    expect(current.victories).toEqual([{ bossIndex: 0, bossId: 'vespera', name: 'Ala de Amatista', page: 10, defeatedAt: '2026-10-17T12:00:00.000Z' }]);
     expect(bossHealth(current)).toBe(100);
-    expect(bossFor(current).name).toBe('Ignar');
+    expect(bossFor(current).name).toBe('Sol de Ámbar');
     expect(bossHealth(completePage(current, 11))).toBe(90);
   });
   it('cycles appearances while keeping each encounter distinct', () => {
-    let current = book();
-    for (let page = 1; page <= 60; page++) current = completePage(current, page);
-    expect(current.victories.map(victory => victory.bossIndex)).toEqual([0, 1, 2, 3, 4, 5]);
-    expect(current.victories[5].name).toBe('Véspera');
-    expect(bossFor(current).index).toBe(6);
+    let current = book(110);
+    for (let page = 1; page <= 110; page++) current = completePage(current, page);
+    expect(current.victories.map(victory => victory.bossIndex)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    expect(current.victories[10].name).toBe('Ala de Amatista');
+    expect(bossFor(current).index).toBe(11);
     expect(percent(current)).toBe(100);
   });
   it('preserves custom names in the victory history', () => {
     let current: Book = { ...book(), skins: { vespera: { name: 'Mi dragón', image: 'data:image/png;base64,test' } } };
     for (let page = 1; page <= 10; page++) current = completePage(current, page);
     expect(current.victories[0].name).toBe('Mi dragón');
-    expect(bossFor({ ...current, skins: {} }, 0).name).toBe('Véspera');
+    expect(bossFor({ ...current, skins: {} }, 0).name).toBe('Ala de Amatista');
     expect(current.victories[0].name).toBe('Mi dragón');
   });
   it('keeps books independent and short final encounters unfinished', () => {
@@ -54,5 +54,9 @@ describe('Reading combat', () => {
     expect(bossHealth(first)).toBe(70);
     expect(second.completedPages).toHaveLength(0);
     expect(bossHealth(second)).toBe(100);
+  });
+  it('keeps pre-update victories attached to their original boss image', () => {
+    expect(bossForVictory({bossIndex: 5, name: 'Véspera', defeatedAt: '', page: 60}).id).toBe('vespera');
+    expect(bossForVictory({bossIndex: 5, bossId: 'eclipse', name: 'Eclipse Carmesí', defeatedAt: '', page: 60}).id).toBe('eclipse');
   });
 });

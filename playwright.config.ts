@@ -8,8 +8,8 @@ export default defineConfig({
   workers: 2,
   use: { baseURL: 'http://127.0.0.1:4173', trace: 'retain-on-failure', launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH } },
   projects: [
-    { name: 'desktop', testMatch: '**/app.spec.ts', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 1000 } } },
-    { name: 'mobile', testMatch: '**/app.spec.ts', use: { ...devices['iPhone 13'], defaultBrowserType: 'chromium' } },
+    { name: 'desktop', testMatch: ['**/app.spec.ts', '**/features.spec.ts'], use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 1000 } } },
+    { name: 'mobile', testMatch: ['**/app.spec.ts', '**/features.spec.ts'], use: { ...devices['iPhone 13'], defaultBrowserType: 'chromium' } },
     { name: 'dev-worker', testMatch: '**/worker.spec.ts', use: { ...devices['Desktop Chrome'], baseURL: 'http://127.0.0.1:5174' } }
   ],
   webServer: [

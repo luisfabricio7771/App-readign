@@ -1,16 +1,21 @@
 import { openDB, type DBSchema } from 'idb';
 import { DEFAULT_SETTINGS, type Book, type Settings } from './model';
+import { DEFAULT_MUSIC, type MusicPreferences } from './youtube';
 
 interface ReaderDB extends DBSchema {
   books: { key: string; value: Book };
   files: { key: string; value: Blob };
   settings: { key: string; value: Settings };
+  music: { key: string; value: MusicPreferences };
 }
-const db = openDB<ReaderDB>('final-reader', 1, {
-  upgrade(database) {
-    database.createObjectStore('books', { keyPath: 'id' });
-    database.createObjectStore('files');
-    database.createObjectStore('settings');
+const db = openDB<ReaderDB>('final-reader', 2, {
+  upgrade(database, oldVersion) {
+    if (oldVersion < 1) {
+      database.createObjectStore('books', { keyPath: 'id' });
+      database.createObjectStore('files');
+      database.createObjectStore('settings');
+    }
+    if (oldVersion < 2) database.createObjectStore('music');
   }
 });
 
@@ -37,6 +42,8 @@ export async function deleteBook(id: string) {
 }
 export const loadSettings = async () => ({ ...DEFAULT_SETTINGS, ...await (await db).get('settings', 'preferences') });
 export const saveSettings = async (settings: Settings) => (await db).put('settings', settings, 'preferences');
+export const loadMusic = async () => ({ ...DEFAULT_MUSIC, ...await (await db).get('music', 'preferences') });
+export const saveMusic = async (preferences: MusicPreferences) => (await db).put('music', preferences, 'preferences');
 
 export async function requestPersistence() {
   // An unsupported or denied request must not prevent importing a book.

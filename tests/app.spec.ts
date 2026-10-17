@@ -12,6 +12,10 @@ async function goTo(page: Page, number: number) {
   await input.fill(String(number)); await input.press('Enter');
   await expect(page.locator(`.pdf-page[data-page="${number}"]`)).toHaveAttribute('data-ready', 'true');
   await expect(input).toHaveValue(String(number));
+  if (await page.locator('.page-turn-viewport').count()) {
+    await expect(page.locator('.page-turn-viewport')).toHaveAttribute('data-visible-page', String(number));
+    await expect(page.locator('.page-turn-viewport')).toHaveAttribute('data-turn-state', 'idle');
+  }
 }
 async function showBattle(page: Page) {
   const chip = page.getByRole('button', { name: 'Desplegar combate', exact: true });
@@ -29,7 +33,7 @@ test('library has honest empty state, working navigation and responsive layout',
   await page.getByRole('button', { name: 'Mis hazañas', exact: true }).click();
   await expect(page.getByText('Tu leyenda está por escribirse')).toBeVisible();
   await page.getByRole('button', { name: 'Bestiario', exact: false }).click();
-  await expect(page.locator('.bestiary-card')).toHaveCount(5);
+  await expect(page.locator('.bestiary-card')).toHaveCount(10);
   await page.locator('.bestiary-card').first().click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await page.getByRole('button', { name: 'Cerrar ventana', exact: true }).click();
@@ -70,6 +74,8 @@ test('real PDF renders, text search navigates and zoom and continuous mode work'
   await expect(page.getByRole('textbox', { name: 'Número de página', exact: true })).toHaveValue('14');
   await page.keyboard.press('ArrowLeft');
   await expect(page.getByRole('textbox', { name: 'Número de página', exact: true })).toHaveValue('13');
+  await expect(page.locator('.page-turn-viewport')).toHaveAttribute('data-visible-page', '13');
+  await expect(page.locator('.page-turn-viewport')).toHaveAttribute('data-turn-state', 'idle');
   await expect(page.locator('.pdf-page')).toHaveAttribute('data-ready', 'true');
   await page.keyboard.press('l');
   await expect(page.getByRole('button', { name: 'Página completada', exact: true })).toBeDisabled();
@@ -89,7 +95,7 @@ test('ten distinct completions award one victory, page eleven damages next boss 
   await goTo(page, 11);
   await page.getByRole('button', { name: 'Página leída', exact: false }).click();
   await showBattle(page);
-  await expect(page.locator('.boss-identity h2')).toHaveText('Ignar');
+  await expect(page.locator('.boss-identity h2')).toHaveText('Sol de Ámbar');
   await expect(page.getByRole('progressbar', { name: 'Vida del jefe' }).first()).toHaveAttribute('aria-valuenow', '90');
   await hideBattle(page);
   await goTo(page, 1);
@@ -141,7 +147,7 @@ test('custom boss name and image and reader settings persist', async ({ page }) 
   await page.getByLabel('Imagen del jefe', { exact: true }).setInputFiles('public/icon-192.png');
   await page.getByRole('button', { name: 'Guardar personalización' }).click();
   await expect(page.locator('.boss-identity h2')).toHaveText('Dragón de mi biblioteca');
-  await expect(page.locator('.boss-stage>img')).toHaveAttribute('src', /^data:image\/webp/);
+  await expect(page.locator('.boss-stage .boss-image')).toHaveAttribute('src', /^data:image\/webp/);
   await hideBattle(page);
   await page.getByRole('button', { name: 'Ajustes de lectura' }).click();
   await page.getByRole('button', { name: 'Clara', exact: true }).click();
@@ -152,7 +158,7 @@ test('custom boss name and image and reader settings persist', async ({ page }) 
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'reduced');
   await showBattle(page);
   await expect(page.locator('.boss-identity h2')).toHaveText('Dragón de mi biblioteca');
-  await expect(page.locator('.boss-stage>img')).toHaveAttribute('src', /^data:image\/webp/);
+  await expect(page.locator('.boss-stage .boss-image')).toHaveAttribute('src', /^data:image\/webp/);
 });
 
 test('production PWA opens and reads stored PDF entirely offline without external requests', async ({ page, context }) => {
