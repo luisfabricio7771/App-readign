@@ -1,0 +1,13 @@
+node_modules/
+dist/
+playwright-report/
+test-results/
+*.local
+*.tsbuildinfo
+.DS_Store
+/public/pdf/
+/public/sample.pdf
+/public/icon-192.png
+/public/icon-512.png
+/public/icon-maskable.png
+/public/apple-touch-icon.png
