@@ -1,7 +1,7 @@
 {
   "name": "final-reader",
   "private": true,
-  "version": "1.3.0",
+  "version": "1.4.0",
   "type": "module",
   "scripts": {
     "predev": "node scripts/prepare-pdf.mjs",
@@ -22,6 +22,7 @@
   "dependencies": {
     "idb": "^8.0.3",
     "lucide-react": "^0.468.0",
+    "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^6.4.299",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
@@ -34,7 +35,6 @@
     "@vitejs/plugin-react": "^5.1.0",
     "electron": "44.9.0",
     "electron-builder": "26.15.3",
-    "pdf-lib": "^1.17.1",
     "typescript": "~5.9.3",
     "vite": "^7.2.2",
     "vite-plugin-pwa": "^1.1.0",

@@ -1,3 +1,4 @@
+import type { EditorDraft } from './pdf-edit';
 import { openDB, type DBSchema } from 'idb';
 import { DEFAULT_SETTINGS, type Book, type Settings } from './model';
 import { DEFAULT_MUSIC, type MusicPreferences } from './youtube';
@@ -6,9 +7,10 @@ interface ReaderDB extends DBSchema {
   books: { key: string; value: Book };
   files: { key: string; value: Blob };
   settings: { key: string; value: Settings };
+  editorDrafts: { key: string; value: EditorDraft };
   music: { key: string; value: MusicPreferences };
 }
-const db = openDB<ReaderDB>('final-reader', 2, {
+const db = openDB<ReaderDB>('final-reader', 3, {
   upgrade(database, oldVersion) {
     if (oldVersion < 1) {
       database.createObjectStore('books', { keyPath: 'id' });
@@ -16,6 +18,7 @@ const db = openDB<ReaderDB>('final-reader', 2, {
       database.createObjectStore('settings');
     }
     if (oldVersion < 2) database.createObjectStore('music');
+    if (oldVersion < 3) database.createObjectStore('editorDrafts');
   }
 });
 
@@ -36,8 +39,8 @@ export async function mutateBook(id: string, update: (book: Book) => Book) {
   return next;
 }
 export async function deleteBook(id: string) {
-  const tx = (await db).transaction(['books', 'files'], 'readwrite');
-  await Promise.all([tx.objectStore('books').delete(id), tx.objectStore('files').delete(id)]);
+  const tx = (await db).transaction(['books', 'files', 'editorDrafts'], 'readwrite');
+  await Promise.all([tx.objectStore('books').delete(id), tx.objectStore('files').delete(id), tx.objectStore('editorDrafts').delete(id)]);
   await tx.done;
 }
 export const loadSettings = async () => ({ ...DEFAULT_SETTINGS, ...await (await db).get('settings', 'preferences') });
@@ -49,3 +52,6 @@ export async function requestPersistence() {
   // An unsupported or denied request must not prevent importing a book.
   try { return await navigator.storage?.persist?.() ?? false; } catch { return false; }
 }
+
+export const loadEditorDraft = async (id: string) => (await db).get('editorDrafts', id);
+export const saveEditorDraft = async (id: string, draft: EditorDraft) => (await db).put('editorDrafts', draft, id);

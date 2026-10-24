@@ -11,6 +11,7 @@ files:
   - desktop/main.cjs
   - desktop/server.cjs
   - package.json
+  - THIRD_PARTY_NOTICES.md
   - '!**/node_modules/**/*'
 win:
   target:

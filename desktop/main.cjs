@@ -59,7 +59,7 @@ else {
     contents.session.on('will-download', (_event, item) => {
       const source = item.getURL();
       if (!source.startsWith(`blob:${assets.origin}/`)) item.cancel();
-      else item.setSaveDialogOptions({ title: 'Guardar PDF', filters: [{ name: 'Documento PDF', extensions: ['pdf'] }] });
+      else item.setSaveDialogOptions({ title: 'Guardar PDF', filters: [{ name: item.getFilename().toLowerCase().endsWith('.png') ? 'Imagen PNG' : 'Documento PDF', extensions: [item.getFilename().toLowerCase().endsWith('.png') ? 'png' : 'pdf'] }] });
     });
     window.once('ready-to-show', () => window.show());
     window.on('closed', () => { window = null; });

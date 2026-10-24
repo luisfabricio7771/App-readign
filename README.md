@@ -8,8 +8,8 @@ La versión de escritorio incluye su propio motor de navegación. **No necesitas
 
 En [Releases](https://github.com/luisfabricio7771/App-readign/releases) encontrarás dos archivos por versión:
 
-- `FinalReader-1.3.0-Setup.exe`: instalador para tu usuario, con selección de carpeta y accesos directos en el escritorio y menú Inicio; no requiere administrador.
-- `FinalReader-1.3.0-Portable.exe`: un solo archivo que puedes guardar y abrir con doble clic, sin instalarlo. Durante el arranque extrae temporalmente su motor de lectura; puede tardar unos segundos.
+- `FinalReader-1.4.0-Setup.exe`: instalador para tu usuario, con selección de carpeta y accesos directos en el escritorio y menú Inicio; no requiere administrador.
+- `FinalReader-1.4.0-Portable.exe`: un solo archivo que puedes guardar y abrir con doble clic, sin instalarlo. Durante el arranque extrae temporalmente su motor de lectura; puede tardar unos segundos.
 
 El lector, la muestra y las ilustraciones vienen incluidos y funcionan sin internet **desde el primer inicio**. La música de YouTube sigue necesitando conexión. Los PDF y el progreso se guardan en `%APPDATA%\Final Reader`, fuera de la carpeta de instalación. La aplicación instalada y la portátil usan la misma biblioteca; las actualizaciones y la desinstalación conservan los datos. Chrome tiene una biblioteca independiente: los libros y el progreso del navegador no se transfieren automáticamente. Puedes importar tus PDF originales en la aplicación.
 
@@ -150,3 +150,20 @@ Para actualizar una copia descargada: detén el servidor con Ctrl + C, descompri
 - `vite.config.ts`: manifiesto PWA y precaché sin servicios externos.
 
 Las ilustraciones y el relato se crearon para Final Reader. Los guardianes siguen la dirección visual de Astralis: ojos, cristales, órbitas y símbolos arcanos. No se incluyen personajes, marcas gráficas ni imágenes de Final Fantasy. El CSS de la capa de texto deriva de PDF.js (Mozilla Foundation, Apache-2.0); ver `THIRD_PARTY_NOTICES.md`.
+
+## Taller PDF (versión 1.4)
+
+Abre un libro y pulsa el lápiz **Editar PDF** en la cabecera. El taller funciona localmente y sin conexión, también en la aplicación de Windows.
+
+- Añadir texto latino, resaltados rectangulares, lápiz libre, firmas dibujadas, líneas, rectángulos, elipses e imágenes/firma escaneada. Seleccionar, mover, actualizar y eliminar las anotaciones añadidas.
+- Girar páginas, reordenarlas, duplicarlas con sus anotaciones, eliminarlas, insertar páginas en blanco, unir otros PDF y extraer rangos a un documento independiente.
+- Recortar márgenes por porcentaje, añadir marca de agua, numeración, título y autor.
+- Rellenar campos de texto, casillas y desplegables compatibles; se exportan como contenido fijo.
+- Deshacer y rehacer hasta 30 cambios. Guardar y recuperar el borrador localmente por libro, incluyendo los PDF unidos.
+- Descargar la copia PDF, incorporarla a la biblioteca, exportar una página como PNG e imprimir una representación del documento editado.
+
+**El original y su progreso nunca se reemplazan.** Guardar la copia crea un libro independiente con su propio progreso. La base de datos pasa a versión 3 añadiendo borradores sin eliminar libros, victorias, música ni ajustes. Una copia exportada es un PDF normal; para continuar editando las anotaciones por separado usa el borrador del libro original.
+
+El taller añade contenido; no reescribe el texto original como un procesador de textos. No incluye OCR, censura segura, firma digital certificada, recuperación de contraseñas ni conversión a Word/Excel. Recortar o tapar texto no elimina la información subyacente. Los PDF cifrados requieren una copia sin contraseña antes de editarlos. La exportación reconstruye el contenido vectorial: puede omitir anotaciones, enlaces, adjuntos y marcadores previos y no conserva firmas digitales válidas. Revisa la copia y conserva el original. El texto nuevo utiliza Helvetica/WinAnsi (incluye español); caracteres no compatibles producen un error de exportación.
+
+Las pruebas del taller comprueban rangos, reordenación, giros, recortes, uniones, páginas en blanco, campos de formulario y generación de PDF. La prueba de navegador añade texto real, recupera el borrador, reorganiza páginas, descarga el resultado y encuentra el texto exportado con PDF.js, conservando el progreso del original. La prueba nativa de Windows también guarda una copia desde el ejecutable empaquetado sin acceso a internet.

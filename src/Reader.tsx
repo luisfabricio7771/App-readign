@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
 import { ArrowLeft, ArrowRight, Check, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeftRight, CircleCheck, Columns2, Expand, EyeOff, LoaderCircle, Maximize, Minimize, Minus, PanelRightClose, PanelRightOpen, Pencil, Plus, Search, Settings2, Swords, Trophy, X, BookOpen, List, Timer, Music2, Sparkles } from 'lucide-react';
 import { bossFor, bossHealth, completePage, percent, type Book, type Settings } from './model';
@@ -11,6 +11,8 @@ import MusicPanel, { type MusicView } from './MusicPanel';
 import { useReducedMotion } from './useReducedMotion';
 import './pdf-text.css';
 
+const PdfEditor = lazy(() => import('./PdfEditor'));
+
 function normalized(value: string) { return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase(); }
 
 interface ReaderProps {
@@ -20,9 +22,12 @@ interface ReaderProps {
   onBack: () => void; password: PasswordHandler;
   notify: (message: string, error?: boolean) => void;
   blocked: boolean;
+  onImportEdited: (file: File) => Promise<void>;
 }
 
-export default function Reader({ book, settings, onUpdate, onSettings, onChangeSettings, onBack, password, notify, blocked }: ReaderProps) {
+export default function Reader({ book, settings, onUpdate, onSettings, onChangeSettings, onBack, password, notify, blocked, onImportEdited }: ReaderProps) {
+  const [pdfEditor, setPdfEditor] = useState(false);
+  blocked = blocked || pdfEditor;
   const [pdf, setPdf] = useState<PDFDocumentProxy>();
   const [loadError, setLoadError] = useState('');
   const [page, setPage] = useState(book.lastPage);
@@ -243,7 +248,7 @@ export default function Reader({ book, settings, onUpdate, onSettings, onChangeS
   }, [attackTick, bossMotion, defeated]);
 
   return <div className={`reader ${panel ? '' : 'panel-hidden'} ${musicView !== 'closed' ? 'music-visible' : ''} ${bossMotion ? '' : 'boss-animations-off'}`} ref={container}>
-    <header className="reader-header"><button className="icon-button back-button" title="Volver a la biblioteca" aria-label="Volver a la biblioteca" onClick={onBack}><ArrowLeft size={20} /></button><div className="reader-book-title"><span>ESTÁS LEYENDO</span><h1>{book.title}</h1></div><div className="reader-header-actions"><button className={`icon-button music-toggle ${musicView !== 'closed' ? 'active' : ''}`} title="Música de YouTube" aria-label="Música de YouTube" aria-expanded={musicView !== 'closed'} onClick={() => { setMusicView(value => value === 'closed' ? 'open' : 'closed'); if (musicView === 'closed') { setPanel(false); setMobilePanel(false); } }}><Music2 size={19} />{musicPlaying && <i />}</button><button className={`icon-button ${searchOpen ? 'active' : ''}`} title="Buscar en el libro (Ctrl + F)" aria-label="Buscar en el libro" onClick={() => searchOpen ? closeSearch() : setSearchOpen(true)}><Search size={19} /></button><button className="icon-button" title="Ajustes de lectura" aria-label="Ajustes de lectura" onClick={onSettings}><Settings2 size={19} /></button><button className="icon-button fullscreen-button" title="Pantalla completa" aria-label="Pantalla completa" onClick={() => void toggleFullscreen()}>{fullscreen ? <Minimize size={19} /> : <Maximize size={19} />}</button><span className="vertical-divider" /><button className="icon-button desktop-panel-toggle" title={panel ? 'Ocultar combate' : 'Mostrar combate'} aria-label={panel ? 'Ocultar combate' : 'Mostrar combate'} onClick={() => setPanel(value => !value)}>{panel ? <PanelRightClose size={20} /> : <PanelRightOpen size={20} />}</button></div></header>
+    <header className="reader-header"><button className="icon-button back-button" title="Volver a la biblioteca" aria-label="Volver a la biblioteca" onClick={onBack}><ArrowLeft size={20} /></button><div className="reader-book-title"><span>ESTÁS LEYENDO</span><h1>{book.title}</h1></div><div className="reader-header-actions"><button className="icon-button" title="Editar PDF" aria-label="Editar PDF" onClick={() => setPdfEditor(true)}><Pencil size={19}/></button><button className={`icon-button music-toggle ${musicView !== 'closed' ? 'active' : ''}`} title="Música de YouTube" aria-label="Música de YouTube" aria-expanded={musicView !== 'closed'} onClick={() => { setMusicView(value => value === 'closed' ? 'open' : 'closed'); if (musicView === 'closed') { setPanel(false); setMobilePanel(false); } }}><Music2 size={19} />{musicPlaying && <i />}</button><button className={`icon-button ${searchOpen ? 'active' : ''}`} title="Buscar en el libro (Ctrl + F)" aria-label="Buscar en el libro" onClick={() => searchOpen ? closeSearch() : setSearchOpen(true)}><Search size={19} /></button><button className="icon-button" title="Ajustes de lectura" aria-label="Ajustes de lectura" onClick={onSettings}><Settings2 size={19} /></button><button className="icon-button fullscreen-button" title="Pantalla completa" aria-label="Pantalla completa" onClick={() => void toggleFullscreen()}>{fullscreen ? <Minimize size={19} /> : <Maximize size={19} />}</button><span className="vertical-divider" /><button className="icon-button desktop-panel-toggle" title={panel ? 'Ocultar combate' : 'Mostrar combate'} aria-label={panel ? 'Ocultar combate' : 'Mostrar combate'} onClick={() => setPanel(value => !value)}>{panel ? <PanelRightClose size={20} /> : <PanelRightOpen size={20} />}</button></div></header>
     {victory && <div className="victory-banner" role="status"><div className="victory-emblem"><Trophy size={22} /></div><div><strong>¡VICTORIA! <span>{victory.name} ha caído.</span></strong><small>+100 EXP · Un nuevo rival te espera. Sigue a tu ritmo.</small></div><button className="icon-button" onClick={() => setVictory(undefined)} aria-label="Cerrar victoria"><X size={18} /></button></div>}
     <div className="reader-body">
       <main className="reading-main">
@@ -277,6 +282,7 @@ export default function Reader({ book, settings, onUpdate, onSettings, onChangeS
       </aside>
       <button className={`mobile-boss-chip ${mobilePanel ? 'hidden' : ''}`} onClick={() => { setMobilePanel(true); if (musicView !== 'closed') setMusicView('mini'); }} aria-label="Desplegar combate"><img src={currentBoss.image} alt="" /><span><strong>{currentBoss.name}</strong><HealthBar health={bossHealth(book)} label={false} /></span><b>{bossHealth(book)}%</b><Expand size={14} /></button>
     </div>
+    {pdfEditor && <Suspense fallback={<div className="modal-backdrop"><p>Cargando editor…</p></div>}><PdfEditor bookId={book.id} title={book.title} onClose={() => setPdfEditor(false)} onImport={file => onImportEdited(file)}/></Suspense>}
     {editor && <BossEditor book={book} bossId={currentBoss.id} onClose={() => setEditor(false)} onSave={async (name, image) => { await onUpdate(book.id, current => ({ ...current, skins: { ...current.skins, [currentBoss.id]: { name, image } } })); }} />}
   </div>;
 }

@@ -17,7 +17,7 @@ const CSP = [
   "default-src 'self'", "script-src 'self' 'wasm-unsafe-eval' https://www.youtube.com",
   "style-src 'self' 'unsafe-inline'", "img-src 'self' data: blob:",
   "font-src 'self' data:", "worker-src 'self' blob:",
-  "frame-src https://www.youtube.com https://www.youtube-nocookie.com",
+  "frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com",
   "connect-src 'self'", "object-src 'none'", "base-uri 'self'",
   "form-action 'none'", "frame-ancestors 'none'"
 ].join('; ');

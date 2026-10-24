@@ -1,0 +1,161 @@
+.modal.wide:has(.pdf-workshop) {
+  width: 1500px;
+  max-width: 97vw;
+  max-height: 96dvh;
+  padding: 22px;
+}
+.pdf-workshop fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.pdf-workshop .helper {
+  line-height: 1.6;
+  margin: 10px 0;
+}
+.edit-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.edit-actions > span {
+  font-size: 11px;
+  flex: 1;
+  color: var(--muted);
+}
+.edit-layout {
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr);
+  gap: 18px;
+  height: 65dvh;
+  min-height: 340px;
+}
+.edit-controls {
+  overflow: auto;
+  padding: 8px 12px 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.edit-controls h3 {
+  font-size: 14px;
+  color: var(--purple);
+  margin-top: 12px;
+}
+.edit-tools {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.edit-tools .button {
+  font-size: 10px;
+  padding: 7px;
+}
+.edit-controls textarea {
+  background: var(--input);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  min-height: 65px;
+  resize: vertical;
+  max-width: 100%;
+}
+.edit-controls input[type="file"] {
+  font-size: 10px;
+  max-width: 100%;
+}
+.edit-controls input[type="color"] {
+  min-height: 32px;
+  padding: 2px;
+}
+.edit-preview {
+  background: #34303e;
+  overflow: auto;
+  padding: 15px;
+  position: relative;
+}
+.edit-zoom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  position: sticky;
+  top: -15px;
+  background: #262130;
+  z-index: 2;
+  padding: 10px;
+  color: #ddd;
+  font-size: 11px;
+}
+.edit-zoom label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.edit-paper {
+  position: relative;
+  background: white;
+  margin: 16px auto;
+  flex: none;
+  touch-action: none;
+  user-select: none;
+  box-shadow: 0 4px 20px #0006;
+}
+.edit-paper canvas,
+.edit-paper svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+}
+.edit-paper svg {
+  pointer-events: none;
+}
+.edit-paper {
+  cursor: crosshair;
+}
+.edit-print-frame {
+  position: fixed;
+  left: -10000px;
+  top: 0;
+  width: 800px;
+  height: 1000px;
+  border: 0;
+}
+.pdf-workshop .form-error {
+  padding: 10px;
+  line-height: 1.5;
+}
+.pdf-workshop input:focus,
+.pdf-workshop textarea:focus {
+  outline: 2px solid var(--purple);
+}
+@media (max-width: 700px) {
+  .edit-layout {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .edit-controls {
+    max-height: 30dvh;
+    padding-right: 0;
+  }
+  .edit-preview {
+    height: 48dvh;
+  }
+  .modal.wide:has(.pdf-workshop) {
+    padding: 14px;
+  }
+  .edit-actions .button {
+    font-size: 10px;
+  }
+  .edit-actions > span {
+    flex-basis: 100%;
+  }
+}
+
+.pdf-workshop > .helper { font-size: 12px; color: var(--muted); }

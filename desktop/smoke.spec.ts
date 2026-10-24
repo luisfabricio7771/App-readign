@@ -22,7 +22,7 @@ test('the desktop app reads offline from first launch, stays sandboxed and prese
     let app = await launch();
     let page = await app.firstWindow();
     const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
-    expect(page.url()).toBe('http://127.0.0.1:43763/');
+    await expect(page).toHaveURL('http://127.0.0.1:43763/');
     await expect(page.getByText('Hay mundos esperando por ti')).toBeVisible();
     const preferences = await app.evaluate(({ BrowserWindow }) => {
       const prefs = BrowserWindow.getAllWindows()[0].webContents.getLastWebPreferences();
@@ -54,6 +54,20 @@ test('the desktop app reads offline from first launch, stays sandboxed and prese
       const db = await new Promise<IDBDatabase>((resolve, reject) => { const request = indexedDB.open('final-reader'); request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error); });
       return new Promise<number>((resolve, reject) => { const request = db.transaction('books').objectStore('books').getAll(); request.onsuccess = () => { db.close(); resolve(request.result[0]?.lastPage); }; request.onerror = () => reject(request.error); });
     })).toBe(7);
+    await page.getByRole('button', { name: 'Editar PDF', exact: true }).click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog.locator('.edit-paper')).toHaveAttribute('data-preview-busy', 'false');
+    await expect.poll(() => dialog.locator('canvas').evaluate(c => (c as HTMLCanvasElement).width)).toBeGreaterThan(300);
+    await dialog.getByLabel('Texto que añadir').fill('Edición nativa sin conexión');
+    await dialog.getByRole('button', { name: 'Texto', exact: true }).click();
+    await dialog.locator('.edit-paper').click({ position: { x: 80, y: 100 } });
+    await expect(dialog.locator('svg text').first()).toHaveText('Edición nativa sin conexión');
+    await dialog.getByRole('button', { name: 'Guardar copia en biblioteca', exact: true }).click();
+    await expect(page.locator('.reader-book-title h1')).toHaveText('El atlas de los umbrales — editado');
+    await page.getByRole('button', { name: 'Volver a la biblioteca', exact: true }).click();
+    await expect(page.locator('.book-card')).toHaveCount(2);
+    await page.getByRole('button', { name: 'Leer El atlas de los umbrales', exact: true }).click();
+    await expect(page.locator('.pdf-page[data-page="7"]')).toHaveAttribute('data-ready', 'true');
     await app.close();
     app = await launch(); page = await app.firstWindow();
     await page.getByRole('button', { name: 'Continuar leyendo', exact: true }).click();
