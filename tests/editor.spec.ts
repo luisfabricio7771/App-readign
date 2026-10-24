@@ -92,13 +92,49 @@ test("editor saves a draft, exports real text and a reorganized copy without alt
     .getByRole("button", { name: "Volver a la biblioteca", exact: true })
     .click();
   await expect(page.locator(".book-card")).toHaveCount(2);
-  const original = page
-    .locator(".book-card")
-    .filter({
-      has: page.getByRole("heading", {
-        name: "El atlas de los umbrales",
-        exact: true,
-      }),
-    });
+  const original = page.locator(".book-card").filter({
+    has: page.getByRole("heading", {
+      name: "El atlas de los umbrales",
+      exact: true,
+    }),
+  });
   await expect(original).toContainText("1 páginas leídas");
+});
+
+test("clearing a dropdown does not silently export its old personal data", async ({
+  page,
+}) => {
+  const pdf = await PDFDocument.create(),
+    sheet = pdf.addPage([500, 700]);
+  sheet.drawText("Formulario de prueba", { x: 40, y: 650 });
+  const field = pdf.getForm().createDropdown("Elegir");
+  field.addOptions(["DatoAnterior", "Nuevo"]);
+  field.select("DatoAnterior");
+  field.addToPage(sheet, { x: 50, y: 500, width: 200, height: 30 });
+  await page.goto("/");
+  await page
+    .getByLabel("Importar archivos PDF")
+    .setInputFiles({
+      name: "formulario.pdf",
+      mimeType: "application/pdf",
+      buffer: Buffer.from(await pdf.save()),
+    });
+  await expect(page.locator(".pdf-page")).toHaveAttribute("data-ready", "true");
+  await page.getByRole("button", { name: "Editar PDF", exact: true }).click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByLabel("Elegir", { exact: true }).selectOption("");
+  await dialog
+    .getByRole("button", { name: "Guardar copia en biblioteca", exact: true })
+    .click();
+  await expect(page.locator(".reader-book-title h1")).toContainText("editado");
+  await page
+    .getByRole("button", { name: "Buscar en el libro", exact: true })
+    .click();
+  await page
+    .getByRole("textbox", { name: "Texto a buscar" })
+    .fill("DatoAnterior");
+  await page.getByRole("button", { name: "Buscar", exact: true }).click();
+  await expect(page.locator(".search-summary")).toContainText(
+    "No hay coincidencias",
+  );
 });

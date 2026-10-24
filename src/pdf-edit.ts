@@ -144,8 +144,11 @@ export async function editPDF(
           const f = field as import("pdf-lib").PDFCheckBox;
           if (val) f.check();
           else f.uncheck();
-        } else if (val && "select" in field)
-          (field as import("pdf-lib").PDFDropdown).select(String(val));
+        } else if (typeof val === "string" && "select" in field) {
+          const dropdown = field as import("pdf-lib").PDFDropdown;
+          if (val) dropdown.select(val);
+          else dropdown.clear();
+        }
       }
       if (form.getFields().length) form.flatten();
       docs.set(sheet.source, source);

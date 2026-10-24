@@ -8,8 +8,8 @@ La versión de escritorio incluye su propio motor de navegación. **No necesitas
 
 En [Releases](https://github.com/luisfabricio7771/App-readign/releases) encontrarás dos archivos por versión:
 
-- `FinalReader-1.4.0-Setup.exe`: instalador para tu usuario, con selección de carpeta y accesos directos en el escritorio y menú Inicio; no requiere administrador.
-- `FinalReader-1.4.0-Portable.exe`: un solo archivo que puedes guardar y abrir con doble clic, sin instalarlo. Durante el arranque extrae temporalmente su motor de lectura; puede tardar unos segundos.
+- `FinalReader-1.4.1-Setup.exe`: instalador para tu usuario, con selección de carpeta y accesos directos en el escritorio y menú Inicio; no requiere administrador.
+- `FinalReader-1.4.1-Portable.exe`: un solo archivo que puedes guardar y abrir con doble clic, sin instalarlo. Durante el arranque extrae temporalmente su motor de lectura; puede tardar unos segundos.
 
 El lector, la muestra y las ilustraciones vienen incluidos y funcionan sin internet **desde el primer inicio**. La música de YouTube sigue necesitando conexión. Los PDF y el progreso se guardan en `%APPDATA%\Final Reader`, fuera de la carpeta de instalación. La aplicación instalada y la portátil usan la misma biblioteca; las actualizaciones y la desinstalación conservan los datos. Chrome tiene una biblioteca independiente: los libros y el progreso del navegador no se transfieren automáticamente. Puedes importar tus PDF originales en la aplicación.
 

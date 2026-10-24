@@ -1,7 +1,7 @@
 Final Reader para **Windows 10/11 de 64 bits**. No necesita Node.js, npm, una terminal ni un navegador instalado.
 
-- **FinalReader-1.4.0-Setup.exe**: instala Final Reader para tu usuario y crea accesos directos en el escritorio y menú Inicio. No requiere permisos de administrador.
-- **FinalReader-1.4.0-Portable.exe**: abre la aplicación sin instalarla. Guárdala en una carpeta y haz doble clic cuando quieras leer.
+- **FinalReader-1.4.1-Setup.exe**: instala Final Reader para tu usuario y crea accesos directos en el escritorio y menú Inicio. No requiere permisos de administrador.
+- **FinalReader-1.4.1-Portable.exe**: abre la aplicación sin instalarla. Guárdala en una carpeta y haz doble clic cuando quieras leer.
 
 Incluye el lector PDF sin conexión desde el primer inicio, los diez jefes, las animaciones de páginas y combate, y el panel oficial opcional de YouTube. YouTube necesita internet y conserva sus anuncios y restricciones.
 

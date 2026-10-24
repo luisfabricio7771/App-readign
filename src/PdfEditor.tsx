@@ -173,43 +173,46 @@ export default function PdfEditor({ bookId, title, onClose, onImport }: Props) {
     let cancelled = false;
     let doc: Awaited<ReturnType<typeof openPdf>> | undefined;
     setPreviewBusy(true);
-    const timer = setTimeout(() => { void (async () => {
-      try {
-        const bytes = await editPDF(
-          sources,
-          { ...state, marks: [], watermark: "", numberPages: false },
-          [Math.min(index, state.pages.length - 1)],
-          false,
-        );
-        if (cancelled) return;
-        doc = await openPdf(new Blob([bytes as BlobPart]));
-        const page = await doc.getPage(1);
-        if (cancelled) return;
-        const base = page.getViewport({ scale: 1 });
-        const viewport = page.getViewport({
-          scale: Math.min(2, 1200 / base.width),
-        });
-        const off = document.createElement("canvas");
-        off.width = viewport.width;
-        off.height = viewport.height;
-        await page.render({ canvas: off, viewport }).promise;
-        if (cancelled) return;
-        const target = canvas.current;
-        if (target) {
-          target.width = off.width;
-          target.height = off.height;
-          target.getContext("2d")!.drawImage(off, 0, 0);
-          setView({ width: base.width, height: base.height });
+    const timer = setTimeout(() => {
+      void (async () => {
+        try {
+          const bytes = await editPDF(
+            sources,
+            { ...state, marks: [], watermark: "", numberPages: false },
+            [Math.min(index, state.pages.length - 1)],
+            false,
+          );
+          if (cancelled) return;
+          doc = await openPdf(new Blob([bytes as BlobPart]));
+          const page = await doc.getPage(1);
+          if (cancelled) return;
+          const base = page.getViewport({ scale: 1 });
+          const viewport = page.getViewport({
+            scale: Math.min(2, 1200 / base.width),
+          });
+          const off = document.createElement("canvas");
+          off.width = viewport.width;
+          off.height = viewport.height;
+          await page.render({ canvas: off, viewport }).promise;
+          if (cancelled) return;
+          const target = canvas.current;
+          if (target) {
+            target.width = off.width;
+            target.height = off.height;
+            target.getContext("2d")!.drawImage(off, 0, 0);
+            setView({ width: base.width, height: base.height });
+          }
+        } catch (e) {
+          if (!cancelled) setError(`Vista previa: ${(e as Error).message}`);
+        } finally {
+          await doc?.loadingTask.destroy();
+          if (!cancelled) setPreviewBusy(false);
         }
-      } catch (e) {
-        if (!cancelled) setError(`Vista previa: ${(e as Error).message}`);
-      } finally {
-        await doc?.loadingTask.destroy();
-        if (!cancelled) setPreviewBusy(false);
-      }
-    })(); }, 180);
+      })();
+    }, 180);
     return () => {
-      cancelled = true; clearTimeout(timer);
+      cancelled = true;
+      clearTimeout(timer);
     };
     // Marks use a vector overlay; drawing does not re-render the PDF on every pointer move.
   }, [sheet?.id, sheet?.rotation, sheet?.crop, sources, state?.fields, index]);
@@ -534,7 +537,8 @@ export default function PdfEditor({ bookId, title, onClose, onImport }: Props) {
       <div className="pdf-workshop" aria-busy={busy}>
         <p className="helper">
           Edición local sobre una copia. Los formularios se exportan como
-          contenido fijo. La copia puede omitir comentarios, enlaces y marcadores previos. Modificar un PDF invalida sus firmas digitales.
+          contenido fijo. La copia puede omitir comentarios, enlaces y
+          marcadores previos. Modificar un PDF invalida sus firmas digitales.
           Recortar o tapar contenido no lo elimina de forma segura.
         </p>
         {error && (
@@ -933,6 +937,7 @@ export default function PdfEditor({ bookId, title, onClose, onImport }: Props) {
                             />
                           ) : f.type === "select" ? (
                             <select
+                              aria-label={f.label}
                               value={String(state.fields[f.key] ?? f.value)}
                               onChange={(e) =>
                                 change({
